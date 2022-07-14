@@ -189,96 +189,91 @@ for( i in 2:length(x)){
   cormat[,(i-1)] = dcc_once(xx)
 }
 
-png(file ="BTC.jpg",width=750,height=750)
-par(mfrow=c(2,2))
-for( i in 1:length(cormat[1,])){
-  plot(ts(cormat[,i],start=c(2015,9),frequency = 250), ylim = c(-1, 1),type = "l",lty=1,ylab= 'correlation',xlab= 'Time')
-  title(main=paste(main=paste("BTC & ",name[i+1],sep="")),cex.main=2)	
-}
-dev.off()
 
-write.csv(cormat,"cormat_ne.csv")
+write.csv(cormat,"cormat_BTC_ETH.csv")
 
-data <- read.csv("cormat_ne.csv",header = T)
+data <- read.csv("cormat_BTC_ETH.csv",header = T)
 head(data)
 data$Date = as.Date(data$Date)
-ggplot(data,aes(Date,ne_it))+geom_line()+ theme_bw() +
+ggplot(data,aes(Date,BTC_ETH))+geom_line()+ theme_bw() +
   theme(panel.grid.major=element_line(colour=NA),
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA),
         panel.grid.minor = element_blank())
 
-ggplot(data,aes(Date,oil_it))+geom_line()+ theme_bw() +
+ggplot(data,aes(Date,BTC_XRP))+geom_line()+ theme_bw() +
   theme(panel.grid.major=element_line(colour=NA),
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA),
         panel.grid.minor = element_blank())
 
-
-BTC_arma <- auto.arima(x[1], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
+###robust
+#BTC_arma <- auto.arima(x[1], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
 ##btc ARMA(1,2)
-ETH_arma <- auto.arima(x[2], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
+#ETH_arma <- auto.arima(x[2], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
 ##eth ARMA(1,1)
-XRP_arma <- auto.arima(x[3], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
+#XRP_arma <- auto.arima(x[3], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
 ##xrp  ARMA(2,2)
-LTC_arma <- auto.arima(x[4], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
+#LTC_arma <- auto.arima(x[4], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
 ##ltc ARMA(4,3)
-XLM_arma <- auto.arima(x[5], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
+#XLM_arma <- auto.arima(x[5], stationary = T, seasonal = F, ic = "aic", allowdrift = FALSE, trace = TRUE)
 ##xlm ARMA(5,0)
-checkresiduals(BTC_arma)
-shapiro.test(BTC_arma$residuals)
+#checkresiduals(BTC_arma)
+#shapiro.test(BTC_arma$residuals)
 ##The residuals are not normally distributed.
 
 
 
-r_BTC <- BTC_arma$residuals
-r_ETH <- ETH_arma$residuals
-r_XRP <- XRP_arma$residuals
-r_LTC <- LTC_arma$residuals
-r_XLM <- XLM_arma$residuals
+#r_BTC <- BTC_arma$residuals
+#r_ETH <- ETH_arma$residuals
+#r_XRP <- XRP_arma$residuals
+#r_LTC <- LTC_arma$residuals
+#r_XLM <- XLM_arma$residuals
 
-ugarch.spec1 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
-                           mean.model=list(armaOrder=c(1,2)),
-                           distribution.model = "sstd")
 
-BTC_garch <- ugarchfit(spec = ugarch.spec1, data = x[1])
-BTC_garch
-ugarch.spec2 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
-                           mean.model=list(armaOrder=c(1,1)),
-                           distribution.model = "sstd")
+#####sgarch
+#ugarch.spec1 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
+#                           mean.model=list(armaOrder=c(1,2)),
+#                           distribution.model = "sstd")
 
-ETH_garch <- ugarchfit(spec = ugarch.spec2, data = x[2])
-ETH_garch
+#BTC_garch <- ugarchfit(spec = ugarch.spec1, data = x[1])
+#BTC_garch
+#ugarch.spec2 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
+#                           mean.model=list(armaOrder=c(1,1)),
+#                           distribution.model = "sstd")
 
-ugarch.spec3 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
-                           mean.model=list(armaOrder=c(2,2)),
-                           distribution.model = "sstd")
+#ETH_garch <- ugarchfit(spec = ugarch.spec2, data = x[2])
+#ETH_garch
 
-XRP_garch <- ugarchfit(spec = ugarch.spec3, data = x[3])
-XRP_garch
+#ugarch.spec3 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
+#                           mean.model=list(armaOrder=c(2,2)),
+#                           distribution.model = "sstd")
 
-ugarch.spec4 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
-                           mean.model=list(armaOrder=c(4,3)),
-                           distribution.model = "sstd")
+#XRP_garch <- ugarchfit(spec = ugarch.spec3, data = x[3])
+#XRP_garch
 
-LTC_garch <- ugarchfit(spec = ugarch.spec4, data = x[4])
-LTC_garch
+#ugarch.spec4 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
+#                           mean.model=list(armaOrder=c(4,3)),
+#                           distribution.model = "sstd")
 
-ugarch.spec5 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
-                           mean.model=list(armaOrder=c(5,0)),
-                           distribution.model = "sstd")
+#LTC_garch <- ugarchfit(spec = ugarch.spec4, data = x[4])
+#LTC_garch
 
-XLM_garch <- ugarchfit(spec = ugarch.spec2, data = x[5])
-XLM_garch
+#ugarch.spec5 <- ugarchspec(variance.model=list(garchOrder=c(1,1)), 
+#                           mean.model=list(armaOrder=c(5,0)),
+#                           distribution.model = "sstd")
 
-dcc.garch.spec = dccspec(uspec = multispec(c(ugarch.spec1, 
-                                             ugarch.spec2, 
-                                             ugarch.spec3, 
-                                             ugarch.spec4,
-                                             ugarch.spec5)),
-                         dccOrder = c(1,1),
-                         distribution = "mvt")
+#XLM_garch <- ugarchfit(spec = ugarch.spec2, data = x[5])
+#XLM_garch
 
-dcc.garch.spec
-dcc.fit = dccfit(dcc.garch.spec, data = x)
-show(dcc.fit)
+#dcc.garch.spec = dccspec(uspec = multispec(c(ugarch.spec1, 
+#                                             ugarch.spec2, 
+#                                             ugarch.spec3, 
+#                                             ugarch.spec4,
+#                                             ugarch.spec5)),
+#                         dccOrder = c(1,1),
+#                         distribution = "mvt")
+
+#dcc.garch.spec
+#dcc.fit = dccfit(dcc.garch.spec, data = x)
+#show(dcc.fit)
